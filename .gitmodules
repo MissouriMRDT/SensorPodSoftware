@@ -1,0 +1,7 @@
+[submodule "libraries/RoveWare"]
+	path = libraries/RoveWare
+	url = https://github.com/MissouriMRDT/RoveWare.git
+
+[submodule "libraries/RoveBoard"]
+	path = libraries/RoveBoard
+	url = https://github.com/MissouriMRDT/RoveBoardESP8266.git
