@@ -1,5 +1,9 @@
-#include <RoveBoard.h>
-#include <RoveComm.h>
+#include <ESP8266WiFi.h>
+#include <WiFiUdp.h>
+#include <IPAddress.h>
+#include "RoveBoard.h"
+#include "RoveComm.h"
+
 
 #define TEMPERATURE_PIN 1
 #define MOISTURE_PIN    2
