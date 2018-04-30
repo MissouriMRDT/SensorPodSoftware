@@ -12,18 +12,27 @@ WiFiUDP udpReceiver;
 
 void roveWiFi_NetworkingStart(char* ssid, char* password, uint8_t IP_octet1, uint8_t IP_octet2, uint8_t IP_octet3, uint8_t IP_octet4)
 {
-digitalWrite(2, 1);
-  WiFi.begin(ssid, password);
-  
+  WiFi.mode(WIFI_STA);
+char ROVE_SSID[] =      "MRDT Wifi";
+char ROVE_PASSWORD[] =  "Rovin2012";
 
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-  }
   IPAddress ip(IP_octet1, IP_octet2, IP_octet3, IP_octet4);
   IPAddress gateway(IP_octet1, IP_octet2, IP_octet3, 1);
   IPAddress subnet(255, 255, 255, 0);
   WiFi.config(ip, gateway, subnet);
+  
+  WiFi.begin(ROVE_SSID, ROVE_PASSWORD);
+  digitalWrite(4, 1);
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+    digitalWrite(3, 1);
+  }
+      digitalWrite(5, 1);
+  
+
 }
 
 RoveWiFi_Error roveWiFi_UdpSocketListen(uint16_t port)

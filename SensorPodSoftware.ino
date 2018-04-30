@@ -4,29 +4,60 @@
 #include "RoveBoard.h"
 #include "RoveComm.h"
 
+RoveCommWiFiUdp RoveComm;
 
-#define TEMPERATURE_PIN 1
-#define MOISTURE_PIN    2
+//////////////////////
+//Software Configuration
+#define USE_SENSOR_SERIAL 1  //Set to 1 to send sensor readings over Serial
+#define USE_WIFI 0          //Set to 1 to use RoveComm WiFi
 
-#define DELAY_MILLIS   100
+//////////////////////
+//Pinouts
+#define TEMPERATURE_PIN 5
+#define MOISTURE_PIN    4
 
-#define TEMPERATURE_DATA_ID 100
-#define MOISTURE_DATA_ID    101
+/////////////////////
+//Conversion
+#define TEMPERATURE_MAX_ACTUAL   1
+#define TEMPERATURE_MAX_MEASURED 1
+#define TEMPERATURE_MIN_ACTUAL   1
+#define TEMPERATURE_MIN_MEASURED 1
 
+#define MOISTURE_MAX_ACTUAL      1
+#define MOISTURE_MAX_MEASURED    1
+#define MOISTURE_MIN_ACTUAL      1
+#define MOISTURE_MIN_MEASURED    1
+
+int temperature_Scalar = (TEMPERATURE_MAX_ACTUAL   - TEMPERATURE_MIN_ACTUAL)/(TEMPERATURE_MAX_MEASURED - TEMPERATURE_MIN_MEASURED);              
+int moisture_Scalar    = (MOISTURE_MAX_ACTUAL      - MOISTURE_MIN_ACTUAL)   /(MOISTURE_MAX_MEASURED    - MOISTURE_MIN_MEASURED);
+                        
+
+int temperature_Translational     = TEMPERATURE_MIN_ACTUAL     - (TEMPERATURE_MIN_MEASURED     * temperature_Scalar);
+int moisture_Translational        = MOISTURE_MIN_ACTUAL - (MOISTURE_MIN_MEASURED * moisture_Scalar);
+
+int temperature_Measurement;
+int moisture_Measurement;
+uint16_t temperature_Output;
+uint16_t moisture_Output;
+         
+
+//////////////////////
+//RoveComm Data Read
 uint16_t data_id;
 size_t   data_size;
 uint8_t  data_value;
-int      reading;
 
+//////////////////////
 //IP Address
-unsigned char FIRST_OCTET  =  192;
-unsigned char SECOND_OCTET =  168;
-unsigned char THIRD_OCTET  =  1;
-unsigned char FOURTH_OCTET =  100;
+unsigned char POD_SUBNET =  100;
+char ssid[]         =  "RoveSoHard";
+char password[]     =  "Rovin2012";
 
-char ROVE_SSID[] =      "RoveSoHard";
-char ROVE_PASSWORD[] =  "Illuminati";
-  
+//Data ID
+#define TEMPERATURE_DATA_ID 100
+#define MOISTURE_DATA_ID    101
+
+///////////////////////////////////////////////////////////
 void setup() {
   pinMode(TEMPERATURE_PIN, OUTPUT);
   pinMode(MOISTURE_PIN, OUTPUT);
@@ -34,25 +65,49 @@ void setup() {
   digitalWrite(MOISTURE_PIN, 0);
   pinMode(A0, INPUT);
 
-  roveComm_BeginWiFi(ROVE_SSID, ROVE_PASSWORD, FIRST_OCTET, SECOND_OCTET, THIRD_OCTET, FOURTH_OCTET);
+  if(USE_WIFI)
+    RoveComm.begin(192, 168, 1, POD_SUBNET, ssid, password);
+
+  if(USE_SENSOR_SERIAL)
+    Serial.begin(9600);
   
 }
 
 void loop() {
-  //Read Temperature Sensor
+  //Get Temperature
   digitalWrite(TEMPERATURE_PIN, 1);
-  delay(DELAY_MILLIS);
-  roveComm_GetMsg(&data_id, &data_size, &data_value);
-  reading = analogRead(A0);
-  roveComm_SendMsg(TEMPERATURE_DATA_ID, sizeof(int), &reading);
-  digitalWrite(TEMPERATURE_PIN, 0);
+  delay(100);
+  temperature_Measurement = analogRead(A0);
+  temperature_Output = temperature_Measurement * temperature_Scalar + temperature_Translational;
+ // digitalWrite(TEMPERATURE_PIN, 0);
 
+  delay(100);
   //Read Moisture Sensor
   digitalWrite(MOISTURE_PIN, 1);
-  delay(DELAY_MILLIS);
-  roveComm_GetMsg(&data_id, &data_size, &data_value);
-  reading = analogRead(A0);
-  roveComm_SendMsg(MOISTURE_DATA_ID, sizeof(int), &reading); 
+  delay(100);
+  moisture_Measurement = analogRead(A0);
+  moisture_Output = moisture_Measurement * moisture_Scalar + moisture_Translational; 
   digitalWrite(MOISTURE_PIN, 0);
 
+
+  //Output RoveComm
+  if(USE_WIFI)
+  {
+    RoveComm.read(&data_id, &data_size, &data_value);
+    RoveComm.write(TEMPERATURE_DATA_ID, sizeof(TEMPERATURE_DATA_ID), &temperature_Output);
+    RoveComm.write(MOISTURE_DATA_ID, sizeof(MOISTURE_DATA_ID), &moisture_Output);
+  }
+
+  if(USE_SENSOR_SERIAL)
+  {
+    Serial.print("Temperature Ain:");
+    Serial.println(temperature_Measurement);
+    Serial.print("Temperature Out:");
+    Serial.println(temperature_Output);
+    Serial.print("Moisture Ain:");
+    Serial.println(moisture_Measurement);
+    Serial.print("Moisture Out:");
+    Serial.println(moisture_Output);
+     Serial.println("");
+  }
 }

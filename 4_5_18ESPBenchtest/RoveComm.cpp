@@ -8,6 +8,8 @@
 #define ROVECOMM_HEADER_LENGTH 8
 #define ROVECOMM_PORT 11000
 
+#include<arduino.h>
+
 #define UDP_TX_PACKET_MAX_SIZE 1500
 #define ROVECOMM_MAX_SUBSCRIBERS 5
 
@@ -31,9 +33,8 @@ static bool RoveCommAddSubscriber(roveIP IP);
 
 void roveComm_BeginWiFi(char* ssid, char* password, uint8_t IP_octet1, uint8_t IP_octet2, uint8_t IP_octet3, uint8_t IP_octet4) 
 {
-  
   roveWiFi_NetworkingStart(ssid, password, IP_octet1, IP_octet2, IP_octet3, IP_octet4);
-  
+
   roveWiFi_UdpSocketListen(ROVECOMM_PORT);
   
   int i;
