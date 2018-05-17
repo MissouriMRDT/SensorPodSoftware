@@ -9,7 +9,7 @@ RoveCommWiFiUdp RoveComm;
 //////////////////////
 //Software Configuration
 #define USE_SENSOR_SERIAL 1  //Set to 1 to send sensor readings over Serial
-#define USE_WIFI 0          //Set to 1 to use RoveComm WiFi
+#define USE_WIFI 1           //Set to 1 to use RoveComm WiFi
 
 //////////////////////
 //Pinouts
@@ -18,15 +18,15 @@ RoveCommWiFiUdp RoveComm;
 
 /////////////////////
 //Conversion
-#define TEMPERATURE_MAX_ACTUAL   1
-#define TEMPERATURE_MAX_MEASURED 1
-#define TEMPERATURE_MIN_ACTUAL   1
-#define TEMPERATURE_MIN_MEASURED 1
+#define TEMPERATURE_MAX_ACTUAL   1     //Analog Read
+#define TEMPERATURE_MAX_MEASURED 1000  //Sensor Reading
+#define TEMPERATURE_MIN_ACTUAL   0
+#define TEMPERATURE_MIN_MEASURED 0
 
 #define MOISTURE_MAX_ACTUAL      1
-#define MOISTURE_MAX_MEASURED    1
-#define MOISTURE_MIN_ACTUAL      1
-#define MOISTURE_MIN_MEASURED    1
+#define MOISTURE_MAX_MEASURED    1000
+#define MOISTURE_MIN_ACTUAL      0
+#define MOISTURE_MIN_MEASURED    0
 
 int temperature_Scalar = (TEMPERATURE_MAX_ACTUAL   - TEMPERATURE_MIN_ACTUAL)/(TEMPERATURE_MAX_MEASURED - TEMPERATURE_MIN_MEASURED);              
 int moisture_Scalar    = (MOISTURE_MAX_ACTUAL      - MOISTURE_MIN_ACTUAL)   /(MOISTURE_MAX_MEASURED    - MOISTURE_MIN_MEASURED);
@@ -49,13 +49,13 @@ uint8_t  data_value;
 
 //////////////////////
 //IP Address
-unsigned char POD_SUBNET =  100;
-char ssid[]         =  "RoveSoHard";
+unsigned char POD_SUBNET =  133;
+char ssid[]         =  "MRDT Wifi";
 char password[]     =  "Rovin2012";
 
 //Data ID
-#define TEMPERATURE_DATA_ID 100
-#define MOISTURE_DATA_ID    101
+#define TEMPERATURE_DATA_ID 1832
+#define MOISTURE_DATA_ID    1833
 
 ///////////////////////////////////////////////////////////
 void setup() {
