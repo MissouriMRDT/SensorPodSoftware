@@ -94,8 +94,8 @@ void loop() {
   if(USE_WIFI)
   {
     RoveComm.read(&data_id, &data_size, &data_value);
-    RoveComm.write(TEMPERATURE_DATA_ID, sizeof(TEMPERATURE_DATA_ID), &temperature_Output);
-    RoveComm.write(MOISTURE_DATA_ID, sizeof(MOISTURE_DATA_ID), &moisture_Output);
+    RoveComm.write(TEMPERATURE_DATA_ID, sizeof(temperature_Output), &temperature_Output);
+    RoveComm.write(MOISTURE_DATA_ID, sizeof(moisture_Output), &moisture_Output);
   }
 
   if(USE_SENSOR_SERIAL)
